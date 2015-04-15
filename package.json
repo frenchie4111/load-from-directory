@@ -1,0 +1,33 @@
+{
+  "name": "load-from-directory",
+  "version": "1.0.0",
+  "description": "Loads all modules from the given directory into an array",
+  "main": "index.js",
+  "directories": {
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "node --harmony node_modules/.bin/_mocha --recursive tests/"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:frenchie4111/load-from-directory.git"
+  },
+  "keywords": [
+    "nodejs",
+    "load",
+    "directory",
+    "require",
+    "dir"
+  ],
+  "author": "Michael Lyons <mdl0394@gmail.com>",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/frenchie4111/load-from-directory/issues"
+  },
+  "homepage": "https://github.com/frenchie4111/load-from-directory",
+  "devDependencies": {
+    "chai": "^2.2.0",
+    "mocha": "^2.2.4"
+  }
+}
