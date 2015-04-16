@@ -1,6 +1,6 @@
 {
   "name": "load-from-directory",
-  "version": "1.0.1",
+  "version": "1.0.2",
   "description": "Loads all modules from the given directory into an array",
   "main": "index.js",
   "directories": {
