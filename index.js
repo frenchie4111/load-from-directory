@@ -13,24 +13,31 @@
         _ = require( 'underscore' ),
         callsite = require( 'callsite' );
 
+    var _removeExtension = function( filename ) {
+        var filename_split = filename.split( '.' );
+        filename_split.pop(); // Remove the last thing, which is the extension
+        return filename_split.join( '.' );
+    };
+
     /**
      * Loads all modules from directory, returns array
      * @param root_directory Relative path to root_directory where modules should be loaded from
      * @param options object containing options
-     * @param options.exclude (Default=["index.js", /\..* /])File names to exclude from import
+     * @param options.exclude (Default=["index.js", /\..* /]) File names to exclude from import
+     * @param options.caller_directory (Default=callsite()[ 1 ].getFileName) The directory to use as the root directory for the import (The __dirname of the person calling this method)
      * @returns {Array}
      */
-    module.exports.load = function( root_directory, options ) {
+    exports.load = function( root_directory, options ) {
         options = options || {};
         _.defaults( options, {
-            exclude: [ 'index.js', /^\..*/ ]
+            exclude: [ 'index.js', /^\..*/ ],
+            caller_directory: path.dirname( callsite()[ 1 ].getFileName() )
         } );
 
-        var caller_directory = path.dirname( callsite()[ 1 ].getFileName() );
-        var root_directory_resolved = path.resolve( caller_directory, root_directory );
+        var root_directory_resolved = path.resolve( options.caller_directory, root_directory );
 
         var file_names = fs
-            .readdirSync( path.resolve( caller_directory, root_directory ) );
+            .readdirSync( path.resolve( options.caller_directory, root_directory ) );
 
         return _.chain( file_names )
             .filter( function( name ) { // Check that it doesn't match any of the excludes
@@ -40,14 +47,35 @@
             } )
             .map( function( name ) { // Import the file
                 // Get full absolute path to the module
-                var root_directory_resolved_file = path.resolve( root_directory_resolved, name );
+                var name_without_extension = _removeExtension( name );
+                var root_directory_resolved_file = path.resolve( root_directory_resolved, name_without_extension );
 
                 // Get it's relative path to here, prepend with ./ so that require() will understand it
                 var relative = './' + path.relative( __dirname, root_directory_resolved_file );
 
                 // Require the module
-                return require( relative );
+                return [ name_without_extension, require( relative ) ]; // Return both, so we can reduce it back into an object
             } )
+            .reduce( function( full, part ) {
+                if( !full ) full = {};
+                full[ part[ 0 ] ] = part[ 1 ];
+                return full;
+            }, {} ) // start with empty object
             .value();
+    };
+
+    exports.loadArray = function( root_directory, options ) {
+        options = options || {};
+        _.defaults( options, {
+            caller_directory: path.dirname( callsite()[ 1 ].getFileName() ) // Set this here, because when we call load we fuck up the stacke
+        } );
+
+        // Load the modules
+        var loaded = exports.load( root_directory, options );
+
+        // Use map to convert the object into a value array
+        return _.map( loaded, function( item ) {
+            return item
+        } );
     };
 })();
