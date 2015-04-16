@@ -20,12 +20,12 @@
     };
 
     /**
-     * Loads all modules from directory, returns array
+     * Loads all modules from directory, returns object
      * @param root_directory Relative path to root_directory where modules should be loaded from
-     * @param options object containing options
-     * @param options.exclude (Default=["index.js", /\..* /]) File names to exclude from import
-     * @param options.caller_directory (Default=callsite()[ 1 ].getFileName) The directory to use as the root directory for the import (The __dirname of the person calling this method)
-     * @returns {Array}
+     * @param options object [{}] - Optional argument containing options
+     * @param options.exclude [["index.js", /\..* /]] File names to exclude from import
+     * @param options.caller_directory [callsite()[ 1 ].getFileName] The directory to use as the root directory for the import (The __dirname of the person calling this method)
+     * @returns {*} Object containing modules key: module name, value: module
      */
     exports.load = function( root_directory, options ) {
         options = options || {};
@@ -64,6 +64,12 @@
             .value();
     };
 
+    /**
+     * Loads all modules from directory, returns array
+     * @param root_directory Relative path to root_directory where modules should be loaded from
+     * @param options [{}] See .load() for more information
+     * @returns {Array} Array containing modules
+     */
     exports.loadArray = function( root_directory, options ) {
         options = options || {};
         _.defaults( options, {
