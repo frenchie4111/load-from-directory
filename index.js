@@ -65,19 +65,29 @@
     };
 
     /**
+     * Loads all modules from directory, returns object
+     * @param root_directory Relative path to root_directory where modules should be loaded from
+     * @param options [{}] See .load() for more information
+     * @returns {Object} Object containing modules w/key as module_name
+     */
+    exports.loadObject = function( root_directory, options ) {
+        options = options || {};
+        _.defaults( options, {
+            caller_directory: path.dirname( callsite()[ 1 ].getFileName() ) // Set this here, because when we call load we fuck up the stack
+        } );
+
+        // Load the modules
+        return exports.load( root_directory, options );
+    };
+
+    /**
      * Loads all modules from directory, returns array
      * @param root_directory Relative path to root_directory where modules should be loaded from
      * @param options [{}] See .load() for more information
      * @returns {Array} Array containing modules
      */
     exports.loadArray = function( root_directory, options ) {
-        options = options || {};
-        _.defaults( options, {
-            caller_directory: path.dirname( callsite()[ 1 ].getFileName() ) // Set this here, because when we call load we fuck up the stacke
-        } );
-
-        // Load the modules
-        var loaded = exports.load( root_directory, options );
+        var loaded = exports.loadObject( root_directory, options );
 
         // Use map to convert the object into a value array
         return _.map( loaded, function( item ) {
