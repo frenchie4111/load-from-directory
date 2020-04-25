@@ -15,6 +15,9 @@
 
     var _removeExtension = function( filename ) {
         var filename_split = filename.split( '.' );
+        if( filename_split.length === 1 ) {
+            return filename;
+        }
         filename_split.pop(); // Remove the last thing, which is the extension
         return filename_split.join( '.' );
     };
@@ -87,6 +90,11 @@
      * @returns {Array} Array containing modules
      */
     exports.loadArray = function( root_directory, options ) {
+        options = options || {};
+        _.defaults( options, {
+            caller_directory: path.dirname( callsite()[ 1 ].getFileName() ) // Set this here, because when we call load we fuck up the stack
+        } );
+
         var loaded = exports.loadObject( root_directory, options );
 
         // Use map to convert the object into a value array

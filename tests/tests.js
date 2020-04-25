@@ -24,6 +24,17 @@
                 assert.isFunction( modules[ 'module' ].method );
                 assert.equal( modules[ 'module' ].method(), 'method_response' );
             } );
+
+            it( 'should load folders', function() {
+                var modules = load_modules.load( 'test_folder_subdir' );
+                assert.equal( Object.keys( modules ).length, 2, 'Should have imported one module' );
+                assert.property( modules, 'see_me' );
+                assert.property( modules, 'a_dir' );
+                assert.property( modules[ 'see_me' ], 'method' );
+                assert.property( modules[ 'a_dir' ], 'method' );
+                assert.equal( modules[ 'see_me' ].method(), 'method_response' );
+                assert.equal( modules[ 'a_dir' ].method(), 'method_response' );
+            } );
         } );
 
         describe( 'loadArray', function() {
